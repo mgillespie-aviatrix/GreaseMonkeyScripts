@@ -1,0 +1,51 @@
+// ==UserScript==
+// @name         CoPilotDateTimeRange
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  This removes the read-only attribute and allows a user to manually enter a datetime. This allows you to create prettier, more honed in graphs for customer sharing.
+// @author       Matthew Gillespie
+// @match        https://*/perfmon/metrics
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function waitForElm(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                resolve(document.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+    function remove_ro(){
+     var divs = document.querySelectorAll('input');
+     var i;
+     for (i = 0; i < divs.length; ++i){
+         divs[i].style.color='red';
+         divs[i].removeAttribute('readonly');
+     }
+     console.log("REMOVED")
+    }
+
+    waitForElm('#rw_1_input').then((elm) => {
+    console.log('Element is ready');
+    console.log(elm.textContent);
+    setInterval(remove_ro, 5000);
+
+});
+})();
